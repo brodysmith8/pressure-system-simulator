@@ -47,9 +47,27 @@ On hospital oxygen gas systems: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC868
 
 [1] CSA standard on medical gases: https://www.csagroup.org/store/product/Z7396.1-17/  
 
-# Meta  
+# Miscellaneous  
 ## Eventual Load Simulation   
 Will need to simulate actual hospital usage eventually. 
+
+
+## Simulator Time Stuff  
+This simulation is capable of both real-time, and of time-scaled simulation. The modality is controllable by changing `config.ini`:
+- For real-time simulation, set `SIMULATION_TIME_SCALE_FACTOR = 1.0`
+- For slowed simulation, set `SIMULATION_TIME_SCALE_FACTOR < 1.0`
+- For accelerated simulation, set `SIMULATION_TIME_SCALE_FACTOR > 1.0`
+
+I've made it so that the length of the simulated timestep can be altered also. This is primarily to allow simulation of the simulated system in durations of less than a second.
+
+| TScF  | TStL | Real Life Time per 60 s Simulated Time | Number of Simulated Timesteps |
+|-------|------|----------------------------------------|-------------------------------|
+| 1.0   | 1.0  | 60 s                                   | 60                            |
+| 2.0   | 1.0  | 30 s                                   | 60                            |
+| 1.0   | 0.5  | 60 s                                   | 120                           |
+| 60.0  | 0.5  | 2 s                                    | 120                           |
+| 120.0 | 0.5  | 1 s                                    | 120                           |
+
 
 ## Floating Point Arithmetic/Related Variable Naming  
 Since the simulation requires a lot of floating point arithmetic, I am using the decimal module provided by python https://docs.python.org/3/library/decimal.html. I am aiming to make all floating point numbers required for math of the Decimal type for homology in the greater pursuit of reliability. 
@@ -62,4 +80,4 @@ I am keeping both a float and a Decimal type to minimize `float -> Decimal` and 
 1. They are expensive;
 2. They will be frequent, occurring once every timestep (at least).
 
-Hence, the public (Decimal-type) constant (`SIMULATION_TIMESTEP_LENGTH_SECONDS`) does not have a type specification nor a leading hyphen to indicate its use internally to the Simulation class. Whereas, the float constant (`_SIMULATION_TIMESTEP_LENGTH_SECONDS_FLOAT`) does have both a type specification, and a leading hyphen. 
+Hence, the public (Decimal-type) constant (`SIMULATION_TIMESTEP_LENGTH_SECONDS`) does not have a type specification nor a leading hyphen to indicate its use internally to the Simulation class. Whereas, the float constant (`_SIMULATION_TIMESTEP_REAL_LENGTH_SECONDS`) does have both a type specification, and a leading hyphen. 
