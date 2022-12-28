@@ -2,9 +2,10 @@ from decimal import Decimal, getcontext
 getcontext().prec = 12
 from time import sleep
 import configparser
+from system import System
 
 class Simulation:
-    def __init__(self) -> None:
+    def __init__(self, system: System) -> None:
         self._cfg = configparser.ConfigParser()
         self._cfg.read('config.ini')
 
@@ -25,8 +26,8 @@ class Simulation:
         self._time_step_id = 0
         self._is_running = False 
 
-        #
-        #self.
+        # topology of simulation objects
+        self._simulation_system = system
 
 
     def run(self) -> None:
@@ -34,10 +35,9 @@ class Simulation:
 
         # can implement parallelism here for faster performance if i want to
         while(self._is_running):
-            print(f'Timestep: {self._time_step_id}, Time Elapsed: {self._time_elapsed} s')
+            print(f'SIMULATION META: Timestep: {self._time_step_id}, Time Elapsed: {self._time_elapsed} s')
             
-            #for item in self._prioritized_simulation_objects:
-            #    item.update()
+            self._simulation_system.advance()
 
             # Meta Updates
             self._time_step_id += 1

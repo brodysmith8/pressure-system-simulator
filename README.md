@@ -80,4 +80,34 @@ I am keeping both a float and a Decimal type to minimize `float -> Decimal` and 
 1. They are expensive;
 2. They will be frequent, occurring once every timestep (at least).
 
-Hence, the public (Decimal-type) constant (`SIMULATION_TIMESTEP_LENGTH_SECONDS`) does not have a type specification nor a leading hyphen to indicate its use internally to the Simulation class. Whereas, the float constant (`_SIMULATION_TIMESTEP_REAL_LENGTH_SECONDS`) does have both a type specification, and a leading hyphen. 
+Hence, the public (Decimal-type) constant (`SIMULATION_TIMESTEP_LENGTH_SECONDS`) does not have a type specification nor a leading hyphen to indicate its use internally to the Simulation class. Whereas, the float constant (`_SIMULATION_TIMESTEP_REAL_LENGTH_SECONDS`) does have both a type specification, and a leading hyphen.  
+
+## Simulated System  
+The simulator works by controlling the state of a system. When the simulator *updates* every timestep, it *advances* the simulated system to a new state - the next state. The system's next state will be simulated by referencing the system's current state.  
+
+The system is made of system components. These system components together may form smaller subsystems, which themselves are also systems. A subsystem can be simulated independently using the current state of itself, but also the current state of other subsystems.  
+
+As previously illustrated, systems may be comprised of subsystems. This model of classification may result in a sort of recursive object structure. By way of example: System A may be composed of Subsystem B and C. Subsystem B is composed of Subsystem B1, B2, B3. Subsystem C is composed of Subsystem C1, C2, etc. This means that a subsystem can actually be viewed both as a System in and of itself, but also as a SystemComponent of a parent system.  
+
+As such, I am going to generalize the idea of a SystemComponent to just be represented by a SubSystem. System will be the *root* class of represented system. It tracks the topology and interconnection of the modelled system. Since SubSystems can be Systems too, SubSystem can be the same class as System.  
+
+### Simulation Scheme  
+A system, when discretely componentized, will have subsystems which rely on the state of other subsystems. The way I see it right now, there are two ways to approach this idea of order in simulation:
+1. Simulate subsystems solely based on the previous state of the system *(Last State-based Simulation (LSS));*
+2. Simulate subsystems in a priority queue-like way, simulating dependency subsystems before dependent subsystems *(Current State, Order-based Simulation (CSOS))*.  
+
+The second one came to me first, and seems initially more intuitive. The first one makes more sense though I think, and would allow for parallel computation so it would be much faster.  
+
+Just took a walk and the first one, LSS, sounds way better. All next subsystem states are determined completely independently of other next subsystem states. Since external actions will need to wait to have an effect on the system until the next sim timestep anyways, this has no affect on simulation accuracy as far as I can see it. 
+
+Moreover, the simulation should be running at a low enough TStL (probably like `5000 Hz` so `TStL = 0.0002`) to where any external effect on the system (e.g. load increase/decrease, sudden leak, emergency shutoff, etc.) will be accounted for essentially as soon as it happens. I don't think the perceived initial intrinsic benefits of generating each subsystem state sequentially per timestep and using the output thereof for the generation of the next subsystem (CSOS) outweigh or even compare to the benefits of an independent, last state-based simulation scheme as proposed here. 
+
+In LSS, dependencies between various subsystems can exist, yet their calculation is independent. For example, if a Tank subsystem needs interaction with a Gas subsystem, a Tank subsystem needs interaction with a Load Distribution subsystem, a Load Distribution subsystem needs interaction with a Distributed Load subsystem, etc., none of these dependencies will be blocked by each others' calculations in a single timestep. Their current state is instead calculated by the state of their dependency subsystems in the *greater system's last state.* 
+
+### Last State-based Simulation Example  
+Consider this sample system which we are interested in simulating (note that this is not reflective of the actual system we want to model here; it is an example):  
+
+![Sample System](example_modelled_system.png)
+
+How could we simulate this system dependently in one step with this many interdependencies? Well, with Last State-based Simulation, we don't need to worry about it because we can just use the last representation of the system:  
+![LSS Example System](LSS_example.png)

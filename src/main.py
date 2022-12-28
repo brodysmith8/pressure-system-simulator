@@ -1,6 +1,9 @@
 from simulation import Simulation
 
-simulation = Simulation()
-print(f'Is the sim operating in real time?: {simulation._SIMULATION_IS_REALTIME}')
+# assemble System as per the system diagram detailed in the readme
 
-simulation.run()
+# initiate the Simulation of the System
+#simulation = Simulation()
+#print(f'Is the sim operating in real time?: {simulation._SIMULATION_IS_REALTIME}')
+
+#simulation.run()
