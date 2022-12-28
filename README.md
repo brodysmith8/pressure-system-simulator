@@ -106,8 +106,11 @@ In LSS, dependencies between various subsystems can exist, yet their calculation
 
 ### Last State-based Simulation Example  
 Consider this sample system which we are interested in simulating (note that this is not reflective of the actual system we want to model here; it is an example):  
-
 ![Sample System](example_modelled_system.png)
 
 How could we simulate this system dependently in one step with this many interdependencies? Well, with Last State-based Simulation, we don't need to worry about it because we can just use the last representation of the system:  
-![LSS Example System](LSS_example.png)
+![LSS Example System](LSS_example.png) 
+
+The state represented by the dashed boxes around all the subsystems represents the state of the whole system. In other words, it represents the system boundary. 
+
+Perhaps, accessing the last state of the greater system as a whole and the subsystems within it could be done via some kind of interface mechanism with the System class.
