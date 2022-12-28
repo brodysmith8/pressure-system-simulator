@@ -114,3 +114,5 @@ How could we simulate this system dependently in one step with this many interde
 The state represented by the dashed boxes around all the subsystems represents the state of the whole system. In other words, it represents the system boundary. 
 
 Perhaps, accessing the last state of the greater system as a whole and the subsystems within it could be done via some kind of interface mechanism with the System class.
+
+**unfortunately for now i will be using CSOS. LSS is difficult to implement because it is very complex to remember what specifically is calculated before what. LSS will be implemented when sensors are a thing. It makes sense that sensors would be delayed**
