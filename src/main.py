@@ -1,19 +1,24 @@
 from simulation import Simulation
 from system import System
 from vessel import Vessel
+from load import Load
+from pipe import Pipe
 
 # assemble System as per the system diagram detailed in the readme
 root_system = System()
 
-# tank test (probably won't stay like this, but
-# im testing subsystem nesting right now)
-compressed_pressure_vessel = Vessel(10.0)
+# gas vessel
+compressed_pressure_vessel = Vessel(10000.0)
 
-root_system.add_subsystem(compressed_pressure_vessel)
+# test load
+load = Load()
+
+# pipe
+vessel_to_load = Pipe(compressed_pressure_vessel, load)
+
+root_system.add_subsystem(vessel_to_load)
 
 # initiate the Simulation of the System
-# can substitute system for compressed_pressure_vessel here and it still
-# works (inheritance was right choice)
 simulation = Simulation(root_system)
 
 simulation.run()
