@@ -1,4 +1,5 @@
 from simulation import Simulation
+from decimal import Decimal
 from system import System
 from vessel import Vessel
 from load import Load
@@ -8,7 +9,7 @@ from pipe import Pipe
 root_system = System()
 
 # gas vessel
-compressed_pressure_vessel = Vessel(10000.0)
+compressed_pressure_vessel = Vessel(Decimal(10000.0))
 
 # test load
 load = Load()

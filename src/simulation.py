@@ -6,8 +6,8 @@ from system import System
 getcontext().prec = 12
 
 
-class Simulation:
-    def __init__(self, system: System) -> None:
+class SimulationConfiguration:
+    def __init__(self) -> None:
         self._cfg = configparser.ConfigParser()
         self._cfg.read('config.ini')
 
@@ -19,7 +19,7 @@ class Simulation:
             self._cfg_simulation['SIMULATION_TIMESTEP_LENGTH_SECONDS'])
 
         if (self.SIMULATION_TIMESTEP_LENGTH_SECONDS
-           * self._SIMULATION_TIME_SCALE_FACTOR) == 1.0:
+                * self._SIMULATION_TIME_SCALE_FACTOR) == 1.0:
             self._SIMULATION_IS_REALTIME = True
         else:
             self._SIMULATION_IS_REALTIME = False
@@ -27,6 +27,15 @@ class Simulation:
         self._SIMULATION_TIMESTEP_REAL_LENGTH_SECONDS = float(
             self.SIMULATION_TIMESTEP_LENGTH_SECONDS
             / self._SIMULATION_TIME_SCALE_FACTOR)  # represents the real time
+
+        self.SIMULATION_FREQUENCY = Decimal(1) / self.SIMULATION_TIMESTEP_LENGTH_SECONDS  # AKA ONE SECOND REFERENCE
+        self.ONE_SECOND_REFERENCE = self.SIMULATION_FREQUENCY
+        self.ONE_MINUTE_REFERENCE = self.SIMULATION_FREQUENCY * Decimal(60)
+
+
+class Simulation:
+    def __init__(self, system: System) -> None:
+        self._sim_config = SimulationConfiguration()
 
         # meta stuff
         self._time_elapsed = Decimal(0.0)
@@ -44,16 +53,16 @@ class Simulation:
         print('----- [SIM INIT] Simulation Settings -----')
         print(
             '_SIMULATION_TIME_SCALE_FACTOR: \t\t\t' +
-            f'{self._SIMULATION_TIME_SCALE_FACTOR}')
+            f'{self._sim_config._SIMULATION_TIME_SCALE_FACTOR}')
         print(
             'SIMULATION_TIMESTEP_LENGTH_SECONDS: \t\t' +
-            f'{self.SIMULATION_TIMESTEP_LENGTH_SECONDS}')
+            f'{self._sim_config.SIMULATION_TIMESTEP_LENGTH_SECONDS}')
         print(
             '_SIMULATION_IS_REALTIME: \t\t\t' +
-            f'{self._SIMULATION_IS_REALTIME}')
+            f'{self._sim_config._SIMULATION_IS_REALTIME}')
         print(
             '_SIMULATION_TIMESTEP_REAL_LENGTH_SECONDS: \t' +
-            f'{self._SIMULATION_TIMESTEP_REAL_LENGTH_SECONDS}')
+            f'{self._sim_config._SIMULATION_TIMESTEP_REAL_LENGTH_SECONDS}')
         print(
             'root _simulation_system address: \t\t' +
             f'{self._simulation_system}')
@@ -73,5 +82,5 @@ class Simulation:
                 f'[SIM META] TIMESTEP {self._time_step_id} END, elapsed:' +
                 f' {self._time_elapsed} s\n')
             self._time_step_id += 1
-            self._time_elapsed += self.SIMULATION_TIMESTEP_LENGTH_SECONDS
-            sleep(self._SIMULATION_TIMESTEP_REAL_LENGTH_SECONDS)
+            self._time_elapsed += self._sim_config.SIMULATION_TIMESTEP_LENGTH_SECONDS
+            sleep(self._sim_config._SIMULATION_TIMESTEP_REAL_LENGTH_SECONDS)

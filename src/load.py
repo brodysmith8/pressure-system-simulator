@@ -1,12 +1,14 @@
 from system import System
-from decimal import Decimal
+from gas_container import GasContainer
+from decimal import Decimal, getcontext
+getcontext().prec = 9
 
 
-class Load(System):
+class Load(System, GasContainer):
     def __init__(self) -> None:
         super().__init__()
-        self.required_volume = Decimal(345)  # L
-        self.required_rate = Decimal(0)  # L/min, pretend this is a ventilator
+        self.required_rate = Decimal(25)  # L/min, pretend this is a ventilator 0.416667 L/s
+        self.required_volume = Decimal(0.416667)  # L. Sim Frequency Hz * 60 s in 1 minute = 1 second
         self.intake_volume = Decimal(0)  # L
 
     def update(self) -> None:
