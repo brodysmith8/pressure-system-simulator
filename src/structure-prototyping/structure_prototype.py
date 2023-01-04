@@ -1,6 +1,17 @@
-from structure_helpers import get_structure_tree_bfs
-from create_topology import create_topology
+from structure_helpers import get_structure_tree_bfs, get_reversed_structure_tree_bfs
+from create_topology import Topology
+from pptree import print_tree  # external dependency for printing the structure tree
 
-root = create_topology()
 
-print(get_structure_tree_bfs(root))
+topo = Topology()
+root = topo.get_root()
+last = topo.get_last_leaf()
+forward_tree = get_structure_tree_bfs(root)
+reverse_tree = get_reversed_structure_tree_bfs(last)
+
+print('Forward Tree:')
+print_tree(root, 'outputs')
+print('\nReverse Tree:')
+print_tree(last, 'inputs')
+
+# preprocess phase 1
