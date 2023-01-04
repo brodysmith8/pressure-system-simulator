@@ -91,7 +91,7 @@ As previously illustrated, systems may be comprised of subsystems. This model of
 
 As such, I am going to generalize the idea of a SystemComponent to just be represented by a SubSystem. System will be the *root* class of represented system. It tracks the topology and interconnection of the modelled system. Since SubSystems can be Systems too, SubSystem can be the same class as System.  
 
-### Simulation Scheme  
+### Simulation Scheme (This isn't entirely accurate right now)  
 A system, when discretely componentized, will have subsystems which rely on the state of other subsystems. The way I see it right now, there are two ways to approach this idea of order in simulation:
 1. Simulate subsystems solely based on the previous state of the system *(Last State-based Simulation (LSS));*
 2. Simulate subsystems in a priority queue-like way, simulating dependency subsystems before dependent subsystems *(Current State, Order-based Simulation (CSOS))*.  
