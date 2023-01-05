@@ -1,4 +1,6 @@
 from collections import deque
+from typing import Dict
+from structure import Structure
 
 
 # left-to-right breadth-first traversal
@@ -34,6 +36,7 @@ def get_reversed_structure_tree_bfs(root_structure) -> dict:
 # {p: depth, cl:depth, cll:depth, cr, crl, crll, crlr, etc}
 def find_structure_depths_dfs(root_structure) -> dict:
     stack = deque()
+    on_stack = set()
     queue = deque()
     explored = dict()
     stack.append(root_structure)
@@ -46,10 +49,28 @@ def find_structure_depths_dfs(root_structure) -> dict:
             if output not in explored:
                 last_node = current_node
                 explored[output] = explored[last_node]+1
-                stack.append(current_node)
+                if current_node not in on_stack:
+                    stack.append(current_node)
                 stack.append(output)
                 break
     return explored
+
+
+def calculate_nodal_volumes_by_depth(depths: Dict[Structure, int]) -> None:
+    by_level = dict()
+    for key in depths:
+        if depths[key] not in by_level:
+            by_level[depths[key]] = [key]
+        else:
+            by_level[depths[key]].append(key)
+
+    # lol
+    for key in sorted(list(by_level))[::-1]:
+        for child in by_level[key]:
+            print(f'Child: {child}')
+            for parent in child.inputs:
+                print(f'\tParent: {parent}')
+                parent.add_downstream_nodal_volume(child)
 
 
 # left-to-right breadth-first traversal

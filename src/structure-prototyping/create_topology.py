@@ -19,7 +19,7 @@ class Topology:
         regulator_bottle.max_output_pressure = 6.0
         regulator_bottle.add_input(bottle)
 
-        pipe1 = Structure(0.16, "pipe1")
+        pipe1 = Structure(0.09, "pipe1")
         pipe1.add_input(regulator_bottle)
 
         splitter = Structure(0.03, "splitter")

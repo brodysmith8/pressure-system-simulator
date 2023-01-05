@@ -16,32 +16,17 @@ class Structure:
 
     def add_input(self, component) -> None:
         self.inputs.append(component)
+        if component.is_root:
+            self.nodal_volume_requirement -= self.internal_volume  # because it's a storage structure
         component.add_output(self)
 
     def add_output(self, component) -> None:
         self.outputs.append(component)
 
-    # need to start with the last element and move backwards.
-    # do this in reverse BFS
-    def calculate_nodal_volume_requirement(self) -> None:
-        self.times_counted += 1
-        string = f'{self.initial_name},'
-        string += f'times counted: {self.times_counted},'
-        string += f' current nodal vol: {self.nodal_volume_requirement}'
-        print(string)
-        if self.is_root:
-            return
-        self.per_output_volume_requirement = []
-        self.nodal_volume_requirement = self.internal_volume
-        for output in self.outputs:
-            self.per_output_volume_requirement.append(output.nodal_volume_requirement)
-        self.nodal_volume_requirement += sum(self.per_output_volume_requirement)
-        self.name = f'{self.initial_name} NV: {self.nodal_volume_requirement:.2f} m3'
-
     def add_downstream_nodal_volume(self, downstream_structure) -> None:
         self.per_output_volume_requirement.append(downstream_structure)
         self.nodal_volume_requirement += downstream_structure.nodal_volume_requirement
-        # self.name = f'{self.initial_name} NV: {self.nodal_volume_requirement} m3'
+        self.name = f'{self.initial_name} NV: {self.nodal_volume_requirement:.2f} m3'
 
     def __repr__(self) -> str:
         return self.name
