@@ -45,9 +45,7 @@ def find_structure_depths_dfs(root_structure) -> dict:
         for output in queue:
             if output not in explored:
                 last_node = current_node
-                print(f'\nlast node: {last_node}')
                 explored[output] = explored[last_node]+1
-                print(explored)
                 stack.append(current_node)
                 stack.append(output)
                 break
