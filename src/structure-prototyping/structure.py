@@ -11,7 +11,8 @@ class Structure:
         self.is_root: bool = False
         self.nodal_volume_requirement = self.internal_volume
         self.per_output_volume_requirement = []  # will have a 1:1 mapping with self.outputs -> new data structure
-        self.name = f'{self.initial_name} NV: {self.nodal_volume_requirement} m3'
+        self.name = self.initial_name
+        # self.name = f'{self.initial_name} NV: {self.nodal_volume_requirement} m3'
 
     def add_input(self, component) -> None:
         self.inputs.append(component)
@@ -36,6 +37,11 @@ class Structure:
             self.per_output_volume_requirement.append(output.nodal_volume_requirement)
         self.nodal_volume_requirement += sum(self.per_output_volume_requirement)
         self.name = f'{self.initial_name} NV: {self.nodal_volume_requirement:.2f} m3'
+
+    def add_downstream_nodal_volume(self, downstream_structure) -> None:
+        self.per_output_volume_requirement.append(downstream_structure)
+        self.nodal_volume_requirement += downstream_structure.nodal_volume_requirement
+        # self.name = f'{self.initial_name} NV: {self.nodal_volume_requirement} m3'
 
     def __repr__(self) -> str:
         return self.name

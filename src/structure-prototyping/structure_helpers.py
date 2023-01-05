@@ -25,10 +25,37 @@ def get_reversed_structure_tree_bfs(root_structure) -> dict:
         current_parent = explored.popleft()
         children = []
         for child in current_parent.inputs:
-            child.calculate_nodal_volume_requirement()
             children.append(child)
             explored.append(child)  # this is how we get left-to-right
         ret[current_parent] = children
+    return ret
+
+
+# {p: depth, cl:depth, cll:depth, cr, crl, crll, crlr, etc}
+def find_structure_depths_dfs(root_structure) -> dict:
+    ret = dict()
+    stack = deque()
+    queue = deque()
+    explored = set()
+    last_depth = -1  # set this to -1 for the root node (0th node)
+    stack.append(root_structure)
+    explored.add(root_structure)
+    while len(stack) != 0:  # while we still have nodes to dive into
+        current_node = stack.pop()
+        # add depth here
+        if current_node not in ret:
+            ret[current_node] = last_depth + 1  # we are 1 deeper now
+        else:
+            last_depth = ret[current_node]
+
+        queue = current_node.outputs
+        for output in queue:
+            if output not in explored:
+                explored.add(output)
+                stack.append(current_node)
+                stack.append(output)
+                break
+    ret[root_structure] = 0
     return ret
 
 
