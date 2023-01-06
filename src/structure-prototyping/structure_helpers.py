@@ -36,7 +36,6 @@ def get_reversed_structure_tree_bfs(root_structure) -> dict:
 # {p: depth, cl:depth, cll:depth, cr, crl, crll, crlr, etc}
 def find_structure_depths_dfs(root_structure) -> dict:
     stack = deque()
-    on_stack = set()
     queue = deque()
     explored = dict()
     stack.append(root_structure)
@@ -47,10 +46,10 @@ def find_structure_depths_dfs(root_structure) -> dict:
         queue = current_node.outputs
         for output in queue:
             if output not in explored:
+                # print(f'   -> Output: {output}')
                 last_node = current_node
                 explored[output] = explored[last_node]+1
-                if current_node not in on_stack:
-                    stack.append(current_node)
+                stack.append(current_node)
                 stack.append(output)
                 break
     return explored
@@ -118,4 +117,60 @@ def dfs_get_sublists(li):
 
 
 # pressurizes the system in-place
-# def pressurize(root_structure) -> None:
+# since we have the entire initial volume load for the system
+# calculated in the preprocess phase, then we can immediately calculate
+# the pressure required to sate that. How will pressure regulators work?
+# Well, if the required downstream volume load is higher than the output
+# pressure of the pressure regulator, then the required volume won't be delivered.
+# Possibly, add a plausibility check using the sum of the system pressures and the
+# downstream volume requirements of each pressure-limiting device (i.e. only regulators,
+# for now) to see if downstream vol can be met, and give a warning if not?
+
+# bfs p_in = p_out from parent / # parent's outputs
+def pressurize(root_structure) -> None:
+    stack = deque()
+    queue = deque()
+    storage_vessels = set()
+    explored = dict()
+    stack.append(root_structure)
+    explored[root_structure] = -1
+    last_node = root_structure
+
+    running_sum_n: float = 0.0
+    for storage_vessel in root_structure.outputs:
+        storage_vessels.add(storage_vessel)
+        p = 100.0*1000.0*storage_vessel.internal_pressure
+        v = storage_vessel.internal_volume.total()
+        print(f'Vessel: {storage_vessel},\np: {p} bar,\nV: {v} m3\nn: {p*v / (8.314*(25.0 + 273.15))}')
+        running_sum_n += p*v / (8.314*(25.0 + 273.15))
+
+    initial_v = running_sum_n
+    while len(stack) != 0:  # while we still have nodes to dive into
+        current_node = stack.pop()
+        if current_node not in storage_vessels:
+            p: float = current_node.internal_pressure
+            v: float = current_node.internal_volume.total()
+            pv_div_rt = 100.0*1000.0*p*v / (8.314*(25.0 + 273.15))
+            running_sum_n -= pv_div_rt
+            if running_sum_n < 0:
+                print("!!!OUT OF GAS!!!")
+
+            s1 = f'Current Node: {current_node}, '
+            s2 = f'\n  internal_pressure: {p} bar, '
+            s3 = f'\n  (P*V_internal)/RT = {pv_div_rt} mol, '
+            s4 = f'\nRemaining n: {running_sum_n} mol\n'
+            print(f'{s1}{s2}{s3}{s4}')
+        queue = current_node.outputs
+        for output in queue:
+            if output not in explored:
+                # print(f'   -> Output: {output}')
+                # pressurize
+                if not current_node.is_root:
+                    output.set_pressure(current_node.pressure_out)
+                last_node = current_node
+                explored[output] = explored[last_node]+1
+                stack.append(current_node)
+                stack.append(output)
+                break
+    eqm_str = f'{initial_v/(initial_v-running_sum_n)} simulation timesteps'
+    print(f'How long can this demand be met? (i.e. how long until equilibrium?): {eqm_str}')

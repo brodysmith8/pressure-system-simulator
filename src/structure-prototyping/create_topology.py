@@ -12,7 +12,7 @@ class Topology:
         # if there's only one input and it has 0 volume we know this is storage, or at
         # least we know it's the first level
         bottle = Structure(100.0, "bottle")
-        bottle.internal_pressure = 100.0
+        bottle.set_pressure(100.0)
         bottle.add_input(self.root_node)
 
         regulator_bottle = Structure(0.02, "regulator_bottle")

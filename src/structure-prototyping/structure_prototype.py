@@ -11,7 +11,9 @@ depths = sh.find_structure_depths_dfs(root)
 sh.calculate_nodal_volumes_by_depth(depths)
 
 # pressurize
-# sh.pressurize(root)
+sh.pressurize(root)
+
+print('\nEnd of Preprocessing Stage\n')
 
 # result
 print('Forward Tree:')

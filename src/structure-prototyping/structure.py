@@ -7,6 +7,8 @@ class Structure:
         self.initial_name = name
         self.internal_volume: Volume = Volume(internal_volume)  # can only ever have static volume
         self.internal_pressure: float = 0.0
+        self.pressure_in: float = 0.0
+        self.pressure_out: float = 0.0
         self.max_output_pressure: float = float("inf")
         self.inputs: list[Structure] = []
         self.outputs: list[Structure] = []
@@ -26,6 +28,10 @@ class Structure:
 
     def add_output(self, component) -> None:
         self.outputs.append(component)
+
+    def set_pressure(self, pressure: float) -> None:
+        self.internal_pressure = pressure
+        self.pressure_out = min(self.max_output_pressure, pressure)
 
     def add_downstream_nodal_volume(self, downstream_structure) -> None:
         if self.is_root:
