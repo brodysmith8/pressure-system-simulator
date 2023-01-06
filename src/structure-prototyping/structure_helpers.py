@@ -67,9 +67,7 @@ def calculate_nodal_volumes_by_depth(depths: Dict[Structure, int]) -> None:
     # lol
     for key in sorted(list(by_level))[::-1]:
         for child in by_level[key]:
-            print(f'Child: {child}')
             for parent in child.inputs:
-                print(f'\tParent: {parent}')
                 parent.add_downstream_nodal_volume(child)
 
 
@@ -117,3 +115,7 @@ def dfs_get_sublists(li):
             break  # from the while true
         curr = next_list.pop()
     return ret
+
+
+# pressurizes the system in-place
+# def pressurize(root_structure) -> None:
